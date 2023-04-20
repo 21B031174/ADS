@@ -1,0 +1,87 @@
+#include <iostream>
+
+using namespace std;
+
+struct hp{
+    long long * a;
+    long long capacity;
+    long long len;
+    long long df;
+    long long sum=0;
+    
+    hp(long long capacity,long long df){
+        a = new long long[capacity];
+        this->capacity = capacity;
+        len = 0;
+        this->df = df;
+    }
+    
+    void add(long long x){
+        a[len] = x;
+        len++;
+        heap_up(len-1);
+    }
+    
+    void heap_up(long long i){
+        if(i>0){
+            long long p_pos = (i-1)/2;
+            if(a[i]<a[p_pos]){
+                swap(a[i],a[p_pos]);
+                heap_up(p_pos);
+            }
+        }
+    }
+    
+    long long cut_min(){
+        long long res = a[0];
+        a[0] = a[len-1];
+        len = (len-1>0)?len-1:0;
+        heap_down(0);
+        return res;
+    }
+    
+    void heap_down(long long i){
+        long long l = 2 * i + 1;
+        long long r = 2 * i + 2;
+        long long min_pos = i;
+        if(l<this->len && a[min_pos] > a[l])min_pos = l;
+        if(r<this->len && a[min_pos] > a[r])min_pos = r;
+        if(i != min_pos){
+            swap(a[i],a[min_pos]);
+            heap_down(min_pos);
+        }
+    }
+    void print(){
+        if(len>1){
+            if(a[0]<df){
+                long long x = cut_min();
+                long long y = cut_min();
+                long long p = x + 2*y;
+                add(p);
+                sum++;
+                print();
+            }
+            else{
+                cout<<sum;
+                return;
+            }
+        }
+        else{
+            cout<<-1;
+            return;
+        }
+    }
+};
+
+
+
+int main(){
+    long long a,b,c;cin>>a>>b;
+    hp h(10000000, b);
+    for(long long i=0;i<a;i++){
+        cin>>c;
+        h.add(c);
+    }
+    h.print();
+    return 0;
+}
